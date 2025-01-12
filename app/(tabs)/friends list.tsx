@@ -3,17 +3,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useFocusEffect, useRoute, useNavigationState, useNavigation } from '@react-navigation/native';
+import { chat } from '../UserContext';
 
 
 export default function FriendsList() {
-  console.log("friends page is rendering now %%%%%%%%%%%%%%%%%%%%%%%%%")
-
-  // const route = useRoute(); // Get the route object
-
   const router = useRouter(); // Initialize router
-  // const route = useRoute();
+  const { chatData, setChatData } = chat();
+
   const logoutButtonRef = useRef(null);
   const [message, setMessage] = useState('');
+  const [user, setUser] = useState<{ userId: number; userName: string }>();
   const [loggedOut, setLoggedOut] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -28,7 +27,7 @@ export default function FriendsList() {
     if (headerHeight > 0) {
       calculateRemainingHeight();
     }
-  }, []);
+  }, [headerHeight]);
 
   async function logout() {
     let userData: { loggedIn: boolean } = { loggedIn: false }
@@ -45,32 +44,40 @@ export default function FriendsList() {
       const justLoggedIn: any = await AsyncStorage.getItem('justLoggedIn')
       if (value) {
         const user: { userId: number, userName: string, loggedIn: boolean } = JSON.parse(value);
+        setUser({ userId: user.userId, userName: user.userName })
         // console.log("user loggedIn in friends list", user.loggedIn)
-        // if (user.loggedIn) {
-        console.log("justLoggedIn from getUsername():", justLoggedIn)
-        if (Boolean(justLoggedIn)) {
-          getFriendsList(user.userName)
-          try {
-            await AsyncStorage.setItem('justLoggedIn', 'false');
-            // console.log("justLoggedIn changed getUsername():", justLoggedIn)
-          } catch (error) {
-            console.error('Error saving data', error);
+        if (user.loggedIn) {
+          console.log("justLoggedIn from getUsername():", justLoggedIn)
+          if (Boolean(justLoggedIn)) {
+            getFriendsList(user.userName)
+            try {
+              await AsyncStorage.setItem('justLoggedIn', 'false');
+              // console.log("justLoggedIn changed getUsername():", justLoggedIn)
+            } catch (error) {
+              console.error('Error saving data', error);
+            }
           }
+        } else {
+          router.push('/login');
         }
-        // } else {
-        //   router.push('/login');
-        // }
       }
     } catch (error) {
       console.error('Error loading data', error);
     }
   };
   useEffect(() => {
-    console.log("useEffect works !!!")
     getUsername();
   }, [loggedOut]);
 
-  // console.log(loggedOut)
+  function openChat(id: Number, title: string) {
+    // sender id + receiver id #
+    let chatId: number = +String(user!.userId).slice(-2) + +String(id).slice(-2)
+    console.log(chatId)
+    setChatData({ chatId: chatId, Sender: user?.userName!, receiver: title });
+    router.push('/chat');
+    // router.push('/(tabs)/chat');
+  }
+
 
   let ipv4 = '192.168.1.8'
   const getFriendsList = async (userName: string) => {
@@ -106,9 +113,9 @@ export default function FriendsList() {
     }
   }
 
-  const Item = ({ title }: { title: string }) => (
-    <TouchableOpacity style={styles.friend}>
-      <Text style={styles.friendText}>{title}</Text>
+  const Item = ({ title, id }: { title: string, id: number }) => (
+    <TouchableOpacity onPress={() => openChat(id, title)} style={styles.friend} >
+      <Text style={styles.friendText} >{title}</Text>
     </TouchableOpacity>
   );
 
@@ -125,23 +132,25 @@ export default function FriendsList() {
         setHeaderHeight(height);
       }}>
         <Text style={styles.header}>Chat App</Text>
-        <TouchableOpacity ref={logoutButtonRef} onPress={() => logout()} style={styles.button} >
-          <Text style={[{ color: 'white', fontSize: 15 }]}>Logout</Text>
-        </TouchableOpacity>
+        <View style={styles.userNameCont}>
+          {/* <Text style={styles.userName}>{user?.userName ? user?.userName : "null"}</Text> */}
+          <Text style={styles.userName}>{user?.userName || 'Error'}</Text>
+
+          <TouchableOpacity ref={logoutButtonRef} onPress={() => logout()} style={styles.button} >
+            <Text style={[{ color: 'white', fontSize: 15 }]}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={[styles.List, { height: remainingHeight }]}>
         {/* <Text style={{ color: "white" }}>{message}</Text> */}
         <FlatList<Friend>
-
-          // scrollEnabled={true}
-          // nestedScrollEnabled={true}
-          // keyboardDismissMode="on-drag"
-          // keyboardShouldPersistTaps="handled"
-          // contentContainerStyle={{ flexGrow: 1 }}
           data={allUsers}
-          renderItem={({ item }) => <Item title={item.user_name} />}
+          renderItem={({ item }) => <Item title={item.user_name} id={Number(item.id)} />}
           keyExtractor={item => item.id}
         />
+        {/* <TouchableOpacity onPress={() => openChat(1725483411380)} style={styles.friend}>
+          <Text style={styles.friendText} >Abdelrahman</Text>
+        </TouchableOpacity> */}
       </View>
     </View>
   )
@@ -153,8 +162,6 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 55,
     backgroundColor: '#192a56',
-    // height: "auto",
-    // flex: 1,
     display: 'flex',
     flexDirection: "row",
     alignItems: 'center',
@@ -167,12 +174,26 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "white",
   },
+  userNameCont: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  userName: {
+    color: 'white',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    // borderWidth: '1px solid rgba(39,108,168,1.00)',
+    borderWidth: 1,
+    borderRightWidth: 0,
+    borderColor: "rgba(39,108,168,1.00)",
+    borderRadius: 10
+  },
   List: {
     height: 689,
     backgroundColor: '#193479',
   },
   button: {
-    // fontSize: 25,
     padding: 10,
     backgroundColor: '#193479',
     color: 'white',
@@ -190,16 +211,3 @@ const styles = StyleSheet.create({
   }
 });
 
-
-
-
-
-// useFocusEffect(
-//   React.useCallback(() => {
-//     // Check the params passed to the current route
-//     if (route.params?.fromPage) {
-//       console.log('Navigated from:', route.params.fromPage);
-//       // You can now perform specific actions based on the `fromPage` parameter
-//     }
-//   }, [route]) // Dependency on route to trigger when params change
-// );
