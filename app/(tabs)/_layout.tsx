@@ -1,18 +1,9 @@
 import { Tabs, useRouter, usePathname } from 'expo-router';
-import React, { createContext, useEffect, useState } from 'react';
-import { View, Text, Platform, StyleSheet, BackHandler, Alert, ToastAndroid } from 'react-native';
-import { useNavigation, useRoute, } from '@react-navigation/native';
-// import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, BackHandler, } from 'react-native';
+import { useNavigation, } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import { Stack } from 'expo-router';
-// import { createNativeStackNavigator } from '@react-navigation/native-stack';
-// import { GlobalProvider, useGlobalState } from './GlobalContext';
-import { HapticTab } from '@/components/HapticTab';
-// import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
 import { UserProvider } from '../UserContext';
-
 
 export default function TabLayout() {
   // console.log("layout is rendering now ++++++++++")
@@ -86,15 +77,14 @@ export default function TabLayout() {
   // Redirect user based on the loggedIn state
 
   function direct(isLogin: boolean) {
-    // if (isReady) {
     if (isLogin) {
-      console.log("Redirecting to Friends List");
+      // console.log("Redirecting to Friends List");
       router.push('/friends list');
     } else {
-      console.log("Redirecting to Login");
+      // console.log("Redirecting to Login");keytool -help
+
       router.push('/login');
     }
-    // }
   }
 
   return (
@@ -103,10 +93,7 @@ export default function TabLayout() {
         <Tabs
           screenOptions={{
             tabBarStyle: { display: 'none' },
-            tabBarActiveTintColor: "red",
             headerShown: false,
-            tabBarButton: HapticTab,
-            tabBarBackground: TabBarBackground,
           }}>
           <Tabs.Screen
             name="login"

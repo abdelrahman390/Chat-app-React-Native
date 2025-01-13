@@ -60,8 +60,8 @@ export default function LoginPage() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            user_name: loginUsername,
-            password: loginPassword,
+            user_name: loginUsername.trim(),
+            password: loginPassword.trim(),
           }),
         });
 
@@ -114,8 +114,8 @@ export default function LoginPage() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            user_name: registerUsername,
-            password: registerPassword,
+            user_name: registerUsername.trim(),
+            password: registerPassword.trim(),
           }),
         });
 
@@ -324,7 +324,6 @@ const styles = StyleSheet.create({
   passMessage: {
     textAlign: 'center',
     fontSize: 13,
-    // marginTop: 5,
     padding: 5,
     marginTop: -22,
     borderRadius: 5,

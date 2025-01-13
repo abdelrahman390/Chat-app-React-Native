@@ -5,18 +5,56 @@ import { useRouter, usePathname, useRootNavigationState } from 'expo-router';
 import { chat } from '../UserContext';
 
 const Chat = () => {
-  // const navigation = useNavigation();
   const router = useRouter(); // Initialize router
   const { chatData, setChatData } = chat();
   const flatListRef = useRef<FlatList>(null);
   const [chatMessages, setChatMessages] = useState<{}>({});
   const [chatMessagesIsLoading, setChatMessagesIsLoading] = useState(true);
-  // console.log("chat page", chatData)
+  const [messageContent, setMessageContent] = useState("");
 
+  let ipv4 = '192.168.1.8'
+  async function sendMessage() {
+    // console.log(messageContent.length, messageContent)
+    var BigDate = new Date();
+    var date = BigDate.toLocaleString();
+    var timestamp = new Date().getTime();
+    try {
+      const response = await fetch(`http://${ipv4}:8000/api/chat/save-message/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender: chatData?.Sender,
+          msg: messageContent,
+          receiver: chatData?.receiver,
+          date: date,
+          messageId: timestamp,
+          chatId: chatData?.chatId
+        }),
+      });
+
+      // Check if the response was successful
+      const data = await response.json();
+      // console.log('chat page spi', data) 
+      setMessageContent("")
+      let messageData = { date: date, msg: messageContent, receiver: chatData?.receiver, sender: chatData?.Sender, }
+      // Alert.alert('Alert Title', 'My Alert Msg')
+      if (response.ok) {
+        setChatMessages(prevMessages => [...prevMessages, messageData]);
+      } else {
+        console.error('Error response:', data);
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+    }
+  }
+  // useEffect(() => {
+  //   console.log('chat page spi', chatMessages)
+  // }, [chatMessages])
 
   const getFriendsList = async () => {
     try {
-      let ipv4 = '192.168.1.8'
       const response = await fetch(`http://${ipv4}:8000/api/chat/OpenedChatMessages/`, {
         method: 'POST',
         headers: {
@@ -43,12 +81,13 @@ const Chat = () => {
   }
   useEffect(() => {
     getFriendsList()
-    // setChatMessages({})
   }, [chatData]);
 
   useEffect(() => {
+    // console.log("flatListRef", flatListRef.current)
     if (flatListRef.current) {
       flatListRef.current.scrollToEnd({ animated: true });
+      // console.log('chat page spi', chatMessages)
     }
   }, [chatMessages]);
 
@@ -84,7 +123,8 @@ const Chat = () => {
                     {item.msg}
                   </Text>
                   <Text style={item.sender === chatData?.Sender ? styles.MyMessageData : styles.friendMessageData}>
-                    {item.date}
+                    {/* {item.date} */}
+                    {`${item.date.split(",")[0]}, ${item.date.split(",")[1].split(":").splice(0, 2)} ${item.date.split(",")[1].split(":")[2].split(" ")[1]}`}
                   </Text>
                 </View>
               </View>
@@ -99,9 +139,10 @@ const Chat = () => {
           style={styles.input}
           placeholder="Send message"
           placeholderTextColor="#cfc2c2"
+          value={messageContent}
+          onChangeText={setMessageContent}
         />
-        <TouchableOpacity onPress={() => router.push('/friends list')}>
-          {/* <TouchableOpacity > */}
+        <TouchableOpacity onPress={() => sendMessage()} disabled={(messageContent.trim()).length != 0 ? false : true}>
           <Image
             source={require('../../assets/images/send.png')}
             style={styles.sendIcon}
