@@ -9,7 +9,7 @@
       "platforms": {
         "ios": {
           "podspecPath": "E:\\Programming\\HTML, SCSS,CSS, Javascript, React Projects\\Chat app with React-Native\\node_modules\\@react-native-async-storage\\async-storage\\RNCAsyncStorage.podspec",
-          "version": "2.1.0",
+          "version": "1.23.1",
           "configurations": [],
           "scriptPhases": []
         },
@@ -34,7 +34,7 @@
       "platforms": {
         "ios": {
           "podspecPath": "E:\\Programming\\HTML, SCSS,CSS, Javascript, React Projects\\Chat app with React-Native\\node_modules\\@react-native-picker\\picker\\RNCPicker.podspec",
-          "version": "2.10.2",
+          "version": "2.9.0",
           "configurations": [],
           "scriptPhases": []
         },
@@ -167,6 +167,30 @@
             "RNSModalScreenComponentDescriptor"
           ],
           "cmakeListsPath": "E:/Programming/HTML, SCSS,CSS, Javascript, React Projects/Chat app with React-Native/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
+          "cxxModuleCMakeListsModuleName": null,
+          "cxxModuleCMakeListsPath": null,
+          "cxxModuleHeaderName": null,
+          "isPureCxxDependency": false
+        }
+      }
+    },
+    "react-native-sqlite-storage": {
+      "root": "E:\\Programming\\HTML, SCSS,CSS, Javascript, React Projects\\Chat app with React-Native\\node_modules\\react-native-sqlite-storage",
+      "name": "react-native-sqlite-storage",
+      "platforms": {
+        "ios": {
+          "podspecPath": "E:\\Programming\\HTML, SCSS,CSS, Javascript, React Projects\\Chat app with React-Native\\node_modules\\react-native-sqlite-storage\\react-native-sqlite-storage.podspec",
+          "version": "6.0.1",
+          "configurations": [],
+          "scriptPhases": []
+        },
+        "android": {
+          "sourceDir": "E:\\Programming\\HTML, SCSS,CSS, Javascript, React Projects\\Chat app with React-Native\\node_modules\\react-native-sqlite-storage\\platforms\\android",
+          "packageImportPath": "import org.pgsqlite.SQLitePluginPackage;",
+          "packageInstance": "new SQLitePluginPackage()",
+          "buildTypes": [],
+          "componentDescriptors": [],
+          "cmakeListsPath": "E:/Programming/HTML, SCSS,CSS, Javascript, React Projects/Chat app with React-Native/node_modules/react-native-sqlite-storage/platforms/android/build/generated/source/codegen/jni/CMakeLists.txt",
           "cxxModuleCMakeListsModuleName": null,
           "cxxModuleCMakeListsPath": null,
           "cxxModuleHeaderName": null,
@@ -406,7 +430,7 @@
         },
         {
           "name": "--port <number>",
-          "default": 8081
+          "default": 8082
         },
         {
           "name": "--terminal <string>",
@@ -566,7 +590,7 @@
         },
         {
           "name": "--port <number>",
-          "default": 8081
+          "default": 8082
         },
         {
           "name": "--terminal <string>",

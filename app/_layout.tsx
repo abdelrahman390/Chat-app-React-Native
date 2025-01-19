@@ -33,16 +33,16 @@ export default function RootLayout() {
 
 
   return (
-    <NavigationContainer>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          animation: 'slide_from_right', // Sliding animation
-        }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </NavigationContainer>
+    // <NavigationContainer>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right', // Sliding animation
+      }}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+    // <StatusBar style="auto" />
+    // </NavigationContainer>
   );
 }

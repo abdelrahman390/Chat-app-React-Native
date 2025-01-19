@@ -1,36 +1,78 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Define the type for the context value
-// type UserContextType = {
-//   userData: { chatId: number } | null;
-//   setUserData: React.Dispatch<React.SetStateAction<{ userId: number; userName: string } | null>>;
-// };
-type UserContextType = {
-  chatData: { chatId: number, Sender: string, receiver: string } | null;
-  setChatData: React.Dispatch<React.SetStateAction<{ chatId: number, Sender: string, receiver: string } | null>>;
+type ChatsType = {
+	user: {
+		loggedIn: boolean;
+		userId?: number;
+		token?: string;
+		userName?: string;
+	} | null;
+	setUser: React.Dispatch<
+		React.SetStateAction<{
+			loggedIn: boolean;
+			userId?: number;
+			token?: string;
+			userName?: string;
+		} | null>
+	>;
+	chatData: { chatId: number; Sender: string; receiver: string } | null;
+	setChatData: React.Dispatch<
+		React.SetStateAction<{
+			chatId: number;
+			Sender: string;
+			receiver: string;
+		} | null>
+	>;
+	justLoggedIn: boolean | null;
+	setJustLoggedIn: React.Dispatch<React.SetStateAction<boolean | null>>;
+	allChats: Record<string, any[]> | null; // Consistent typing for allChats
+	setAllChats: React.Dispatch<
+		React.SetStateAction<Record<string, any[]> | null>
+	>;
 };
-
 
 // Create context with undefined as the default value
-const UserContext = createContext<UserContextType | undefined>(undefined);
+const ChatContext = createContext<ChatsType | undefined>(undefined);
 
-// UserProvider component
-export const UserProvider = ({ children }: { children: ReactNode }) => {
-  // const [userData, setUserData] = useState<{ userId: number; userName: string } | null>({ userId: 35, userName: "abdelrahman" });
-  const [chatData, setChatData] = useState<{ chatId: number, Sender: string, receiver: string } | null>(null);
-
-  return (
-    <UserContext.Provider value={{ chatData, setChatData }}>
-      {children}
-    </UserContext.Provider>
-  );
+// ChatProvider component
+export const ChatProvider = ({ children }: { children: ReactNode }) => {
+	const [user, setUser] = useState<{
+		loggedIn: boolean;
+		userId?: number;
+		token?: string;
+		userName?: string;
+	} | null>(null);
+	const [chatData, setChatData] = useState<{
+		chatId: number;
+		Sender: string;
+		receiver: string;
+	} | null>(null);
+	const [justLoggedIn, setJustLoggedIn] = useState<boolean | null>(null);
+	const [allChats, setAllChats] = useState<Record<string, any[]> | null>(null);
+	return (
+		<ChatContext.Provider
+			value={{
+				user,
+				setUser,
+				chatData,
+				setChatData,
+				justLoggedIn,
+				setJustLoggedIn,
+				allChats,
+				setAllChats,
+			}}
+		>
+			{children}
+		</ChatContext.Provider>
+	);
 };
 
-// Hook to use the UserContext
-export const chat = () => {
-  const context = useContext(UserContext);
-  if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
-  }
-  return context;
+// Hook to use the ChatContext
+export const useChatContext = () => {
+	const context = useContext(ChatContext);
+	if (!context) {
+		throw new Error("useChatContext must be used within a ChatProvider");
+	}
+	return context;
 };

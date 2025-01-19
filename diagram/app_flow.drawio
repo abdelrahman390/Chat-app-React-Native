@@ -1,0 +1,48 @@
+<mxfile host="65bd71144e">
+    <diagram name="Real-Time Updates Diagram" id="0">
+        <mxGraphModel dx="656" dy="402" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="reactNativeApp" value="React Native App" style="rounded=1;fillColor=#A8DADC;strokeColor=#457B9D;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="100" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="webApp" value="Web App" style="rounded=1;fillColor=#F4A261;strokeColor=#E76F51;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="250" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="djangoBackend" value="Django Backend" style="rounded=1;fillColor=#E9C46A;strokeColor=#E76F51;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="150" width="150" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="socketServer" value="Socket.IO Server" style="rounded=1;fillColor=#2A9D8F;strokeColor=#264653;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="300" width="150" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="database" value="Database" style="ellipse;fillColor=#264653;strokeColor=#2A9D8F;fontColor=#FFFFFF;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="550" y="225" width="100" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="rnToBackend" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#457B9D;" parent="1" source="reactNativeApp" target="djangoBackend" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="rnToSocket" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#457B9D;" parent="1" source="reactNativeApp" target="socketServer" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="110" y="240"/>
+                            <mxPoint x="375" y="240"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="webToBackend" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#E76F51;" parent="1" source="webApp" target="djangoBackend" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="webToSocket" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#E76F51;" parent="1" source="webApp" target="socketServer" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="backendToDatabase" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#264653;" parent="1" source="djangoBackend" target="database" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="socketToDatabase" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2A9D8F;dashed=1;" parent="1" source="socketServer" target="database" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
