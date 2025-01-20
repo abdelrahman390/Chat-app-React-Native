@@ -24,10 +24,11 @@ export default function LoginPage() {
 		setChatData,
 		justLoggedIn,
 		setJustLoggedIn,
+		ipv4,
 	} = useChatContext();
 
 	const [login, setLogin] = useState("register");
-	const [message, setMessage] = useState("");
+	// const [message, setMessage] = useState("");
 	// login
 	const [loginUsername, setLoginUsername] = useState(""); // State to hold the username
 	const [loginPassword, setLoginPassword] = useState(""); // State to hold the password
@@ -44,38 +45,6 @@ export default function LoginPage() {
 	const [registerAlarm, setRegisterAlarm] = useState(false); // State to hold the password
 	const [registerPassAlarm, setRegisterPassAlarm] = useState(false); // State to hold the password
 	const [registerLoading, setRegisterLoading] = useState(false);
-
-	let ipv4 = "192.168.1.102";
-
-	// const saveData = async (data: any) => {
-	// 	try {
-	// 		let userData = data;
-	// 		userData["loggedIn"] = true;
-	// 		// console.log("save data", userData)
-	// 		await AsyncStorage.setItem("user", JSON.stringify(data));
-	// 		await AsyncStorage.setItem("justLoggedIn", "true");
-	// 		// alert(`Data saved! ${JSON.stringify(data)}`);
-	// 	} catch (error) {
-	// 		console.error("Error saving data", error);
-	// 	}
-	// };
-	// const loadData = async () => {
-	// 	try {
-	// 		const value = await AsyncStorage.getItem("user");
-	// 		// console.log("login page, get user data", value)
-	// 	} catch (error) {
-	// 		console.error("Error loading data", error);
-	// 	}
-	// };
-	// loadData();
-
-	// useEffect(() => {
-	// 	const fetchData = async () => {
-	// 		let value: any = await SecureStore.getItemAsync("user");
-	// 		Alert.alert("test", `${value} %%%% ${JSON.stringify(user)}`);
-	// 	};
-	// 	fetchData();
-	// }, [user]);
 
 	const handleLogin = async () => {
 		if (loginUsername.length !== 0 && loginPassword.length !== 0) {
@@ -113,9 +82,7 @@ export default function LoginPage() {
 						};
 						await SecureStore.setItemAsync("user", JSON.stringify(userData));
 						setUser(userData);
-						// let result: any = await SecureStore.getItemAsync("user");
-						// Alert.alert("test", result);
-						// await saveData({ userId: data.user_id, userName: loginUsername });
+						setJustLoggedIn(true);
 						setLoginAlarm(false);
 						setLoginUsername("");
 						setLoginPassword("");
@@ -166,7 +133,7 @@ export default function LoginPage() {
 
 				if (response.ok) {
 					setRegisterLoading(false);
-					setMessage(`'Login Successful' ${JSON.stringify(data)}`);
+					// setMessage(`'Login Successful' ${JSON.stringify(data)}`);
 					if (data["response"] !== "done") {
 						setRegisterAlarm(true);
 					} else {
@@ -180,18 +147,19 @@ export default function LoginPage() {
 						await SecureStore.setItemAsync("user", JSON.stringify(userData));
 						setRegisterAlarm(false);
 						// await saveData({ userId: data.key, userName: registerUsername });
+						setJustLoggedIn(true);
 						setRegisterUsername("");
 						setRegisterPassword("");
 						setRegisterPasswordConfirm("");
 						router.push("/friends list");
 					}
 				} else {
-					setMessage(data || "Login Failed");
+					// setMessage(data || "Login Failed");
 				}
 			} catch (error) {
 				// console.error('Error during login:', error);
 				setRegisterLoading(false);
-				setMessage(`'Failed to connect to the server' ${error}`);
+				// setMessage(`'Failed to connect to the server' ${error}`);
 			}
 		}
 	};

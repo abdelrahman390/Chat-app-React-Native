@@ -18,14 +18,14 @@ import { useChatContext } from "../UserContext";
 
 const Chat = () => {
 	// const router = useRouter(); // Initialize router
-	const { user, setUser, chatData, setChatData, allChats, setAllChats } =
+	const { user, setUser, chatData, setChatData, allChats, setAllChats, ipv4 } =
 		useChatContext();
 	const flatListRef = useRef<FlatList>(null);
 	const [chatMessages, setChatMessages] = useState<any[]>([]);
 	const [chatMessagesIsLoading, setChatMessagesIsLoading] = useState(true);
 	const [messageContent, setMessageContent] = useState("");
 
-	let ipv4 = "192.168.1.102";
+	// let ipv4 = "192.168.1.102";
 	async function sendMessage() {
 		// console.log(user?.userId, user?.token);
 		// Alert.alert("hallo", `${user?.userId} l ${user?.token}`);
@@ -85,7 +85,8 @@ const Chat = () => {
 		} else {
 			console.log("allChats is either null or not an array");
 		}
-		flatListRef.current?.scrollToEnd({ animated: true });
+		// flatListRef.current?.scrollToEnd({ animated: true });
+		flatListRef.current?.scrollToEnd();
 	}, [chatData, allChats]);
 
 	return (

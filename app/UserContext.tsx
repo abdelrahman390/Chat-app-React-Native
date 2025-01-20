@@ -30,6 +30,8 @@ type ChatsType = {
 	setAllChats: React.Dispatch<
 		React.SetStateAction<Record<string, any[]> | null>
 	>;
+	ipv4: string;
+	setIpv4: React.Dispatch<React.SetStateAction<string>>;
 };
 
 // Create context with undefined as the default value
@@ -50,6 +52,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 	} | null>(null);
 	const [justLoggedIn, setJustLoggedIn] = useState<boolean | null>(null);
 	const [allChats, setAllChats] = useState<Record<string, any[]> | null>(null);
+	const [ipv4, setIpv4] = useState<string>("192.168.1.102");
 	return (
 		<ChatContext.Provider
 			value={{
@@ -61,6 +64,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 				setJustLoggedIn,
 				allChats,
 				setAllChats,
+				ipv4,
+				setIpv4,
 			}}
 		>
 			{children}

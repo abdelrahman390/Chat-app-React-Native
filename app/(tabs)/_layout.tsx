@@ -1,6 +1,13 @@
 import { Tabs, useRouter, usePathname } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, BackHandler, Alert } from "react-native";
+import {
+	View,
+	Text,
+	StyleSheet,
+	BackHandler,
+	Alert,
+	Platform,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ChatProvider } from "../UserContext";
@@ -48,6 +55,7 @@ export default function TabLayout() {
 		try {
 			// const value: any = await AsyncStorage.getItem("user");
 			// let result: any = user;
+			// if (dev)
 			let result: any = await SecureStore.getItemAsync("user");
 			// Alert.alert("test", result);
 

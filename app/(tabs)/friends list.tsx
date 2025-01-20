@@ -27,6 +27,7 @@ export default function FriendsList() {
 		setJustLoggedIn,
 		allChats,
 		setAllChats,
+		ipv4,
 	} = useChatContext();
 
 	const logoutButtonRef = useRef(null);
@@ -34,9 +35,9 @@ export default function FriendsList() {
 	const [serverErrorMessage, setServerErrorMessage] = useState<boolean>(true);
 	// const [user, setUser] = useState<{ userId: number; userName: string }>();
 	const [SocketIsConnected, setSocketIsConnected] = useState(false);
-	const [chatsNewMessage, setChatsNewMessage] = useState<any>({});
-	const [loggedOut, setLoggedOut] = useState(false);
-	const [test, setTest] = useState("");
+	// const [chatsNewMessage, setChatsNewMessage] = useState<any>({});
+	// const [loggedOut, setLoggedOut] = useState(false);
+	// const [test, setTest] = useState("");
 	// const [expoPushToken, setExpoPushToken] = useState('');
 
 	const [allUsers, setAllUsers] = useState([]);
@@ -57,13 +58,13 @@ export default function FriendsList() {
 	}, [headerHeight]);
 
 	async function logout() {
+		// await AsyncStorage.setItem("user", JSON.stringify(userData));
 		let userData: { loggedIn: boolean } = { loggedIn: false };
 		await SecureStore.setItemAsync("user", JSON.stringify(userData));
 		setUser(userData);
-		// await AsyncStorage.setItem("user", JSON.stringify(userData));
-		// setLoggedOut(true);
-		// setJustLoggedIn(true);
 		setAllUsers([]);
+		setChatData(null);
+		setSocketIsConnected(false);
 		router.push("/login");
 	}
 
@@ -89,12 +90,7 @@ export default function FriendsList() {
 				});
 				// console.log("user loggedIn in friends list", user.loggedIn)
 				if (user.loggedIn) {
-					// console.log(
-					// 	"justLoggedIn from getUsername() new one:",
-					// 	Boolean(justLoggedIn)
-					// );
-					// if (Boolean(justLoggedIn)) {
-					// setJustLoggedIn(false);
+					setJustLoggedIn(false);
 					getFriendsList(Number(user.userId), user.token);
 					try {
 						await AsyncStorage.setItem("justLoggedIn", "false");
@@ -102,9 +98,6 @@ export default function FriendsList() {
 					} catch (error) {
 						console.error("Error saving data", error);
 					}
-					// } else {
-					//   // get messages from sqlLite
-					// }
 				} else {
 					router.push("/login");
 				}
@@ -115,7 +108,7 @@ export default function FriendsList() {
 	};
 	useEffect(() => {
 		getUsername();
-	}, []);
+	}, [justLoggedIn]);
 
 	function openChat(id: Number, title: string) {
 		// sender id + receiver id #
@@ -126,7 +119,7 @@ export default function FriendsList() {
 		router.push("/chat");
 	}
 
-	let ipv4 = "192.168.1.102";
+	// let ipv4 = "192.168.1.102";
 	const getFriendsList = async (userId: number, token: string) => {
 		try {
 			// console.log("*********** get Friends List fetched ***********")
@@ -162,7 +155,7 @@ export default function FriendsList() {
 
 	// Initialize the socket connection
 	useEffect(() => {
-		if (user) {
+		if (user?.userId && user?.userName && user?.token) {
 			const io = require("socket.io-client").io;
 			socketRef.current = io(`http://${ipv4}:3002`, {
 				reconnectionAttempts: 10, // Retry 10 times if the connection fails
@@ -181,7 +174,6 @@ export default function FriendsList() {
 				console.log("Connected to server with ID:", socket.id);
 				setSocketIsConnected(true);
 
-				subscribeToChat(119);
 				socket.on("newMessage", (data: any) => {
 					console.log("New message:", data);
 					// setMessages((prev) => [...prev, data]); // Or other state updates
@@ -217,11 +209,6 @@ export default function FriendsList() {
 				console.log("Disconnected from server");
 			});
 
-			const subscribeToChat = (chatId: any) => {
-				console.log(`Subscribing to chat: ${chatId}`);
-				socket.emit("subscribeToChat", chatId.toString());
-			};
-
 			// Cleanup on unmount
 			return () => {
 				unsubscribeFromChat(119);
@@ -254,10 +241,6 @@ export default function FriendsList() {
 		// console.log(`Unsubscribing from chat: ${chatId}`);
 		socketRef.current.emit("unsubscribeFromChat", chatId);
 	};
-
-	// useEffect(() => {
-	// 	console.log("chatsNewMessage", chatsNewMessage);
-	// }, [chatsNewMessage]);
 
 	const Item = ({ title, id }: { title: string; id: number }) => (
 		<TouchableOpacity onPress={() => openChat(id, title)} style={styles.friend}>
