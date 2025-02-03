@@ -16,3 +16,4 @@ A scalable, real-time cross-platform chat application built with:
     Third, run the React-native app:
         1- command "npm start"
         2- Scan the QR code to run app in expo app in android and iPhone 
+[dfgdg.pdf](https://github.com/user-attachments/files/18642802/dfgdg.pdf)
