@@ -1,5 +1,5 @@
 import { Tabs, useRouter, usePathname } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
 	View,
 	Text,
@@ -14,7 +14,8 @@ import { ChatProvider } from "../UserContext";
 import * as SecureStore from "expo-secure-store";
 
 export default function TabLayout() {
-	// console.log("layout is rendering now ++++++++++")
+	const startTime = useRef(performance.now());
+	console.log("second layout page rendering");
 
 	const router = useRouter(); // Initialize router
 	const [backPressCount, setBackPressCount] = useState(0);
@@ -53,12 +54,8 @@ export default function TabLayout() {
 	const getUsername = async () => {
 		// console.log("getUsername in layout run")
 		try {
-			// const value: any = await AsyncStorage.getItem("user");
-			// let result: any = user;
-			// if (dev)
 			let result: any = await SecureStore.getItemAsync("user");
 			// Alert.alert("test", result);
-
 			if (result) {
 				const user: {
 					userId: number;
@@ -66,8 +63,11 @@ export default function TabLayout() {
 					loggedIn: boolean;
 					token: String;
 				} = JSON.parse(result);
-				// setLoggedIn(user.loggedIn);
-				// console.log("from layout loggedIn", user.loggedIn)
+				const endTime = performance.now();
+				const timeTaken = endTime - startTime.current;
+				console.log(
+					`Time taken in the seconde layout page is: ${timeTaken.toFixed(2)} ms`
+				);
 				direct(user.loggedIn);
 			}
 		} catch (error) {

@@ -39,6 +39,7 @@ const Chat = () => {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
+						Authorization: `Bearer ${user?.token}`,
 					},
 					body: JSON.stringify({
 						message: {
@@ -46,12 +47,10 @@ const Chat = () => {
 							msg: messageContent,
 							receiver: chatData?.receiver,
 							date: date,
-							messageId: timestamp,
 							chatId: chatData?.chatId,
 						},
 						user: {
 							userId: user?.userId,
-							token: user?.token,
 						},
 					}),
 				}
@@ -76,7 +75,7 @@ const Chat = () => {
 			// Iterate over the entries (key-value pairs) of the object
 			for (const [chatId, messages] of Object.entries(allChats)) {
 				if (chatId === String(chatData.chatId)) {
-					// console.log("Found chat with ID chatData?.chatId:", chatId, messages);
+					console.log("new message in chat page", chatId, messages);
 					setChatMessages(messages); // Set the messages for the found chat
 					setChatMessagesIsLoading(false);
 					break; // Exit the loop as the chat is found
@@ -141,12 +140,12 @@ const Chat = () => {
 										}
 									>
 										{/* {item.date} */}
-										{`${item.date.split(",")[0]}, ${item.date
+										{/* {`${item.date.split(",")[0]}, ${item.date
 											.split(",")[1]
 											.split(":")
 											.splice(0, 2)} ${
 											item.date.split(",")[1].split(":")[2].split(" ")[1]
-										}`}
+										}`} */}
 									</Text>
 								</View>
 							</View>
@@ -274,44 +273,3 @@ const styles = StyleSheet.create({
 		height: 30,
 	},
 });
-
-// const getFriendsList = async () => {
-// 	try {
-// 		const response = await fetch(
-// 			`http://${ipv4}:8000/api/chat/OpenedChatMessages/`,
-// 			{
-// 				method: "POST",
-// 				headers: {
-// 					"Content-Type": "application/json",
-// 				},
-// 				body: JSON.stringify({
-// 					chat_id: chatData?.chatId,
-// 				}),
-// 			}
-// 		);
-
-// 		// Check if the response was successful
-// 		const data = await response.json();
-// 		// console.log('chat page spi', data)
-// 		if (response.ok) {
-// 			// console.log('chat page spi test', Object.values(data.chat))
-// 			setChatMessagesIsLoading(false);
-// 			setChatMessages(Object.values(data.chat));
-// 		} else {
-// 			console.error("Error response:", data);
-// 		}
-// 	} catch (error) {
-// 		console.error("Error during login:", error);
-// 	}
-// };
-// useEffect(() => {
-// 	getFriendsList();
-// }, [chatData]);
-
-// useEffect(() => {
-// 	// console.log("flatListRef", flatListRef.current)
-// 	if (flatListRef.current) {
-// 		flatListRef.current.scrollToEnd({ animated: true });
-// 		// console.log('chat page spi', chatMessages)
-// 	}
-// }, [chatMessages]);

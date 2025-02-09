@@ -15,8 +15,12 @@ import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
 import { useChatContext } from "../UserContext";
 import * as SecureStore from "expo-secure-store";
+import { parse } from "@babel/core";
+// import { io } from "socket.io-client"; // Correct import
 
 export default function FriendsList() {
+	const startTime = useRef(performance.now());
+	console.log("Friends list page rendering");
 	const router = useRouter(); // Initialize router
 	const {
 		user,
@@ -72,8 +76,6 @@ export default function FriendsList() {
 		try {
 			// console.log("getUsername works ######################")
 			let value: any = await SecureStore.getItemAsync("user");
-			// const justLoggedIn: any = await AsyncStorage.getItem('justLoggedIn');
-			// Alert.alert("test hallo", `${value}`);
 			if (value) {
 				const user: {
 					userId: number;
@@ -81,23 +83,15 @@ export default function FriendsList() {
 					loggedIn: boolean;
 					token: string;
 				} = JSON.parse(value);
-				// console.log("user changed");
 				setUser({
 					userId: user.userId,
 					userName: user.userName,
 					token: user.token,
 					loggedIn: true,
 				});
-				// console.log("user loggedIn in friends list", user.loggedIn)
 				if (user.loggedIn) {
 					setJustLoggedIn(false);
 					getFriendsList(Number(user.userId), user.token);
-					try {
-						await AsyncStorage.setItem("justLoggedIn", "false");
-						// console.log("justLoggedIn changed getUsername():", justLoggedIn)
-					} catch (error) {
-						console.error("Error saving data", error);
-					}
 				} else {
 					router.push("/login");
 				}
@@ -107,6 +101,7 @@ export default function FriendsList() {
 		}
 	};
 	useEffect(() => {
+		// console.log("justLoggedIn", justLoggedIn);
 		getUsername();
 	}, [justLoggedIn]);
 
@@ -121,19 +116,23 @@ export default function FriendsList() {
 
 	// let ipv4 = "192.168.1.102";
 	const getFriendsList = async (userId: number, token: string) => {
+		const endTime = performance.now();
+		const timeTaken = endTime - startTime.current;
+		console.log(
+			`Time taken in the Friend list in (getFriendsList) page is: ${timeTaken.toFixed(
+				2
+			)} ms`
+		);
 		try {
 			// console.log("*********** get Friends List fetched ***********")
 			const response = await fetch(
-				`http://${ipv4}:8000/api/chat/getFriendsList/`,
+				`http://${ipv4}:8000/api/chat/getFriendsList/?userId=${userId}`,
 				{
-					method: "POST",
+					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
+						Authorization: `${token}`,
 					},
-					body: JSON.stringify({
-						userId: userId,
-						token: token,
-					}),
 				}
 			);
 
@@ -156,90 +155,91 @@ export default function FriendsList() {
 	// Initialize the socket connection
 	useEffect(() => {
 		if (user?.userId && user?.userName && user?.token) {
-			const io = require("socket.io-client").io;
-			socketRef.current = io(`http://${ipv4}:3002`, {
-				reconnectionAttempts: 10, // Retry 10 times if the connection fails
-				timeout: 30000, // Wait 30 seconds for a connection
-				transports: ["websocket", "polling"],
-				auth: {
-					token: user.token,
-					userId: user.userId,
-				},
-			});
-			console.log("Connecting to Socket.IO...");
+			try {
+				const io = require("socket.io-client").io;
+				socketRef.current = io(`http://${ipv4}:3002`, {
+					reconnectionAttempts: 1, // Retry 3 times
+					timeout: 3000, // 3 seconds timeout
+					transports: ["websocket", "polling"],
+					auth: {
+						token: user.token,
+						userId: user.userId,
+					},
+				});
+				console.log("Connecting to Socket.IO...");
 
-			const socket = socketRef.current;
-			// Listen for connection
-			socket.on("connect", () => {
-				console.log("Connected to server with ID:", socket.id);
-				setSocketIsConnected(true);
+				const socket = socketRef.current;
+
+				socket.on("connect", () => {
+					console.log("Connected to server with ID:", socket.id);
+					setSocketIsConnected(true);
+				});
 
 				socket.on("newMessage", (data: any) => {
-					console.log("New message:", data);
+					// console.log("New message:", data);
+					// Alert.alert("new message", `${data.chatId} ${data.message.msg}`);
 					// setMessages((prev) => [...prev, data]); // Or other state updates
 					setAllChats((prevChats) => {
 						// Copy previous state to avoid direct mutation
 						const updatedChats = { ...prevChats };
-
 						if (updatedChats[data.chatId]) {
-							updatedChats[data.chatId].push(data.message);
+							// updatedChats[data.chatId].push(data.message);
+							console.log("New message:", data, data.message);
+							const messageText =
+								typeof data.message === "string"
+									? JSON.stringify(data.message)
+									: data.message;
+							updatedChats[data.chatId].push(messageText);
 						} else {
 							updatedChats[data.chatId] = [data.message];
 						}
-
 						return updatedChats;
 					});
-					// Alert.alert("new message", `${data.chatId} ${data.message.msg}`);
-					// setChatsNewMessage((prevChats: any) => {
-					// 	// Create a copy of the previous state and increment the value of the specified chatId
-					// 	const updatedChats: any = { ...prevChats };
-					// 	updatedChats[data.chatId] = (updatedChats[data.chatId] || 0) + 1; // Increment, default to 0 if not defined
-					// 	return updatedChats; // Return the updated state
-					// });
 				});
-			});
 
-			socket.on("connect_error", (error: any) => {
-				console.log("server can`t connect", error);
-				Alert.alert("alarm", error);
-			});
+				socket.on("connect_error", (error: any) => {
+					console.warn("Server connection failed:", error.message);
+					// Alert.alert(
+					// 	"Connection Error",
+					// 	"Unable to connect to NodeJS server. Please try again later."
+					// );
+					setSocketIsConnected(false);
+				});
 
-			// Handle disconnection
-			socket.on("disconnect", () => {
-				console.log("Disconnected from server");
-			});
+				socket.on("disconnect", () => {
+					console.log("Disconnected from server");
+					setSocketIsConnected(false);
+				});
 
-			// Cleanup on unmount
-			return () => {
-				unsubscribeFromChat(119);
-				socket.disconnect();
-			};
+				return () => {
+					if (socketRef.current) {
+						unsubscribeFromChat(119);
+						socketRef.current.disconnect();
+					}
+				};
+			} catch (error) {
+				console.error("Error initializing socket:", error);
+			}
 		}
 	}, [user]);
 
 	useEffect(() => {
-		if (user?.userId) {
-			// console.log("Emitting getChats for user up:", user.userId);
-			socketRef.current.emit("getChats", user?.userId, (response: any) => {
-				if (response.success) {
+		if (socketRef.current && SocketIsConnected && user?.userId) {
+			socketRef.current.emit("getChats", user.userId, (response: any) => {
+				if (response?.success) {
 					setAllChats(response.allChats);
-					// setChatsNewMessage(() =>
-					// 	Object.keys(response.allChats).reduce((acc: any, chatId) => {
-					// 		acc[chatId] = 0;
-					// 		return acc;
-					// 	}, {})
-					// );
 					console.log("Chats received from server:", response);
 				} else {
-					console.error("Failed to get chats:", response.message);
+					console.error("Failed to get chats:", response?.message);
 				}
 			});
 		}
 	}, [SocketIsConnected]);
 
 	const unsubscribeFromChat = (chatId: any) => {
-		// console.log(`Unsubscribing from chat: ${chatId}`);
-		socketRef.current.emit("unsubscribeFromChat", chatId);
+		if (socketRef.current) {
+			socketRef.current.emit("unsubscribeFromChat", chatId);
+		}
 	};
 
 	const Item = ({ title, id }: { title: string; id: number }) => (

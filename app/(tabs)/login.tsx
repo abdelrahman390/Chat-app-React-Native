@@ -9,9 +9,10 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router"; // Import useRouter hook for navigation
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import { useChatContext } from "../UserContext";
+import RNPickerSelect from "react-native-picker-select";
 
 export default function LoginPage() {
 	// console.log("login page *************")
@@ -42,6 +43,7 @@ export default function LoginPage() {
 	const [registerPassShow, setRegisterPassShow] = useState(true); // State to hold the password
 	const [registerPasswordConfirm, setRegisterPasswordConfirm] = useState(""); // State to hold the password
 	const [registerPassConfirmShow, setRegisterPassConfirmShow] = useState(true); // State to hold the password
+	const [registerGender, setRegisterGender] = useState(""); // State to hold the password
 	const [registerAlarm, setRegisterAlarm] = useState(false); // State to hold the password
 	const [registerPassAlarm, setRegisterPassAlarm] = useState(false); // State to hold the password
 	const [registerLoading, setRegisterLoading] = useState(false);
@@ -66,14 +68,15 @@ export default function LoginPage() {
 				const data = await response.json();
 				// console.log(data, response);
 
-				console.log("response", data);
 				if (response.ok) {
+					// console.log("response", data, data.Found == "false");
 					setLoginServerAlarm(false);
 					setLoginLoading(false);
 					// setMessage(`'Login Successful' ${JSON.stringify(data)}`);
 					if (data.Found == "false") {
 						setLoginAlarm(true);
 					} else {
+						console.log("response", data, data.Found == "false");
 						let userData: any = {
 							userId: data.userId,
 							userName: loginUsername,
@@ -111,7 +114,8 @@ export default function LoginPage() {
 		if (
 			registerUsername.length !== 0 &&
 			registerPassword.length !== 0 &&
-			registerPassword === registerPasswordConfirm
+			registerPassword === registerPasswordConfirm &&
+			registerGender != ""
 		) {
 			setRegisterPassAlarm(false);
 			setRegisterLoading(true);
@@ -125,6 +129,7 @@ export default function LoginPage() {
 					body: JSON.stringify({
 						user_name: registerUsername.trim(),
 						password: registerPassword.trim(),
+						gender: registerGender,
 					}),
 				});
 
@@ -284,6 +289,19 @@ export default function LoginPage() {
 						>
 							The two passwords are not match
 						</Text>
+						<RNPickerSelect
+							onValueChange={(value) => setRegisterGender(value)}
+							value={registerGender}
+							items={[
+								{ label: "Male", value: "Male" },
+								{ label: "Female", value: "Female" },
+							]}
+							style={{
+								inputIOS: styles.select, // iOS styling
+								inputAndroid: styles.select, // Android styling
+								placeholder: styles.select, // Optional: Customize placeholder color
+							}}
+						/>
 						<TouchableOpacity style={styles.button} onPress={handleRegister}>
 							<Text style={styles.buttonText}>
 								{registerLoading ? "Loading..." : "Sign Up"}
@@ -375,6 +393,14 @@ const styles = StyleSheet.create({
 		paddingLeft: 5,
 		backgroundColor: "#1296d1",
 		color: "white",
+	},
+	select: {
+		padding: 15,
+		borderRadius: 8,
+		backgroundColor: "#1296d1",
+		color: "white",
+		fontSize: 15,
+		paddingLeft: 5,
 	},
 	iconContainer: {
 		position: "absolute",
