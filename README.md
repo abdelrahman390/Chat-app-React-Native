@@ -1,4 +1,4 @@
-# Real-Time Chat App
+# React-native Real-Time Chat App
 
 A scalable, real-time cross-platform chat application built with:
 
