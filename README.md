@@ -22,3 +22,6 @@ A scalable, real-time cross-platform chat application built with:
 # API Graph
 
 ![Chat App API Graphg drawio](https://github.com/user-attachments/assets/59d832e9-3e3d-461c-bd83-2d908931d016)
+
+# For web chat application:
+Repository: https://github.com/abdelrahman390/chat-app-with-firebase-typescript-and-backend/blob/main/README.md
