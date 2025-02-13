@@ -1,4 +1,4 @@
-# Real-Time Chat App
+# React-native Real-Time Chat App
 
 A scalable, real-time cross-platform chat application built with:
 
@@ -21,4 +21,7 @@ A scalable, real-time cross-platform chat application built with:
 
 # API Graph
 
-![Chat App API Graphg drawio](https://github.com/user-attachments/assets/59d832e9-3e3d-461c-bd83-2d908931d016)
+![Chat App API Graph drawio](https://github.com/user-attachments/assets/31d3419c-e297-492b-bdb6-de85e24eafd6)
+
+# For web chat application:
+Repository: https://github.com/abdelrahman390/chat-app-with-firebase-typescript-and-backend/blob/main/README.md
